@@ -1,0 +1,16 @@
+{
+  "name": "Quantum Network Lab",
+  "short_name": "QNL",
+  "description": "Interactive quantum networking simulations and study material.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#04060e",
+  "theme_color": "#04060e",
+  "icons": [
+    {
+      "src": "assets/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

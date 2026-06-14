@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An interactive browser laboratory for BB84 quantum key distribution, time-bin entanglement, entanglement routing, and quantum-classical fiber coexistence.">
+  <meta name="theme-color" content="#04060e">
+  <meta name="robots" content="index,follow">
+  <meta property="og:title" content="Quantum Network Lab">
+  <meta property="og:description" content="Run transparent, reproducible quantum networking simulations directly in the browser.">
+  <meta property="og:type" content="website">
+  <title>Quantum Network Lab | Interactive Quantum Networking Simulations</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<a class="skip-link" href="#lab-app">Skip to simulations</a>
+<div class="cursor-dot" id="cursor-dot"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+
+  <div class="hero-content reveal">
+    <div class="hero-eyebrow">
+      <span class="hero-eyebrow-dot"></span> Interactive Simulation Suite
+    </div>
+    <h1 class="hero-title">Quantum<br>Network Lab</h1>
+    <p class="hero-sub">
+      A rigorous, premium environment for learning quantum key distribution,
+      time-bin entanglement, and multi-node routing. 
+    </p>
+    <div class="hero-cta-row">
+      <div class="magnetic-wrap"><button class="cta-primary magnetic" data-enter="bb84" type="button">Enter the Lab</button></div>
+      <div class="magnetic-wrap"><button class="cta-secondary magnetic" data-enter="manual" type="button">Read the Manual</button></div>
+    </div>
+    <div class="hero-pills">
+      <span class="hero-pill">BB84 Protocol</span>
+      <span class="hero-pill">Franson Interferometry</span>
+      <span class="hero-pill">Entanglement Swapping</span>
+      <span class="hero-pill">Raman Noise</span>
+    </div>
+  </div>
+
+  <div class="hero-scroll-hint">
+    <svg width="16" height="22" viewBox="0 0 16 22" fill="none"><rect x="1" y="1" width="14" height="20" rx="7" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="7" r="2" fill="currentColor" opacity=".6"/></svg>
+    scroll to explore
+  </div>
+</section>
+
+<div id="concept-strip" class="reveal">
+  <button class="concept-cell magnetic" data-enter="bb84" type="button">
+    <div class="concept-num">Lab 01</div><span class="concept-icon">🔑</span>
+    <h3>BB84 QKD</h3><p>Encode bits in quantum bases. Observe the observer effect.</p>
+  </button>
+  <button class="concept-cell magnetic" data-enter="entangle" type="button">
+    <div class="concept-num">Lab 02</div><span class="concept-icon">⚛️</span>
+    <h3>Time-bin Entanglement</h3><p>Franson interferometry and Bell violation in fiber.</p>
+  </button>
+  <button class="concept-cell magnetic" data-enter="routing" type="button">
+    <div class="concept-num">Lab 03</div><span class="concept-icon">🔗</span>
+    <h3>Multi-node Routing</h3><p>Entanglement swapping across metro network topologies.</p>
+  </button>
+  <button class="concept-cell magnetic" data-enter="coexist" type="button">
+    <div class="concept-num">Lab 04</div><span class="concept-icon">📡</span>
+    <h3>Classical Coexistence</h3><p>Quantum signals vs. Raman noise from WDM telecom traffic.</p>
+  </button>
+</div>
+
+<div id="lab-app" class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="mark" aria-hidden="true">QN</div>
+      <div>
+        <h1>Quantum Network Lab</h1>
+        <p class="subtitle">Premium Interactive Edition</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <span class="pill mode-indicator"><span class="dot"></span><span id="run-status">ready</span></span>
+      <button class="button magnetic" id="btn-export-json" type="button">Export JSON</button>
+      <button class="button magnetic" id="btn-reset-all" type="button">Reset lab</button>
+    </div>
+  </header>
+
+  <aside class="sidebar" aria-label="Lab sections">
+    <div class="nav-group-title">Simulations</div>
+    <button class="nav-button active magnetic" data-view="bb84" type="button">
+      <span class="nav-num">01</span>
+      <span class="nav-text"><strong>BB84 QKD</strong><span>prepare · sift · estimate</span></span>
+      <span class="nav-done" id="done-bb84" style="display:none">✓</span>
+    </button>
+    <button class="nav-button magnetic" data-view="entangle" type="button">
+      <span class="nav-num">02</span>
+      <span class="nav-text"><strong>Time-bin pairs</strong><span>Franson · CHSH · BBM92</span></span>
+      <span class="nav-done" id="done-entangle" style="display:none">✓</span>
+    </button>
+    <button class="nav-button magnetic" data-view="routing" type="button">
+      <span class="nav-num">03</span>
+      <span class="nav-text"><strong>Entanglement routing</strong><span>swapping · memories</span></span>
+      <span class="nav-done" id="done-routing" style="display:none">✓</span>
+    </button>
+    <button class="nav-button magnetic" data-view="coexist" type="button">
+      <span class="nav-num">04</span>
+      <span class="nav-text"><strong>Fiber coexistence</strong><span>WDM · Raman · budget</span></span>
+      <span class="nav-done" id="done-coexist" style="display:none">✓</span>
+    </button>
+    <div class="nav-group-title">Reference</div>
+    <button class="nav-button magnetic" data-view="glossary" type="button">
+      <span class="nav-num">05</span>
+      <span class="nav-text"><strong>Glossary</strong><span>key terms &amp; formulas</span></span>
+    </button>
+    <button class="nav-button magnetic" data-view="manual" type="button">
+      <span class="nav-num">06</span>
+      <span class="nav-text"><strong>Manual</strong><span>how to use the lab</span></span>
+    </button>
+    <button class="nav-button magnetic" data-view="notes" type="button">
+      <span class="nav-num">07</span>
+      <span class="nav-text"><strong>Study notes</strong><span>equations · interpretation</span></span>
+    </button>
+  </aside>
+
+  <main>
+    <section class="view active" id="view-bb84">
+      <div class="view-header reveal">
+        <div>
+          <p class="eyebrow">Protocol lab — 01</p>
+          <h2>BB84 quantum key distribution</h2>
+          <p class="lede">Generate qubits, send them through a lossy/noisy fiber channel, let Bob measure in random bases, estimate QBER from a public sample, and compute the remaining secret key after privacy amplification.</p>
+        </div>
+        <div class="row">
+          <button class="button primary magnetic" id="bb84-run" type="button">Run protocol</button>
+          <button class="button magnetic" id="bb84-mc" type="button">Monte Carlo</button>
+        </div>
+      </div>
+
+      <details class="concept-explainer reveal" open>
+        <summary>🔑 What is BB84? — Expand for a first-principles explanation</summary>
+        <div class="concept-body">
+          <div class="concept-block">
+            <h4>The core idea</h4>
+            <p>Alice encodes each bit as a photon polarization, randomly choosing between two incompatible bases: rectilinear (Z: ↑/→) or diagonal (X: ↗/↘). Bob also randomly picks a basis to measure in. When they chose the same basis, Bob's result matches Alice's — these bits are <em>kept</em>. When bases differ, results are random and the bit is <em>discarded</em>. This is called <strong>sifting</strong>.</p>
+            <div class="key-insight"><strong>Key insight:</strong> No physical law can copy an unknown quantum state (no-cloning theorem). Eve must guess the basis, disturbing ~25% of kept bits if she intercepts. This raises the Quantum Bit Error Rate (QBER) above ~11%, signalling her presence.</div>
+          </div>
+          <div class="concept-block">
+            <h4>What to try first</h4>
+            <p>1. Run with default settings — note the QBER and final key length.<br>
+               2. Slowly increase <em>Optical misalignment</em> and watch QBER rise.<br>
+               3. Set <em>Eve intercept-resend</em> to 50%+  — the key should abort.<br>
+               4. Run <em>Monte Carlo</em> to see the statistical distribution of QBER across many trials.<br>
+               5. Increase fiber distance and observe how fewer detected pulses create noisier QBER estimates.</p>
+          </div>
+        </div>
+      </details>
+
+      <div class="layout">
+        <div class="stack reveal">
+          <div class="panel">
+            <div class="panel-title">Parameters</div>
+            <div class="control">
+              <label for="bb84-pulses">Quantum pulses</label>
+              <output class="control-output" for="bb84-pulses" id="bb84-pulses-out">256</output>
+              <input type="range" id="bb84-pulses" min="64" max="2048" step="64" value="256">
+            </div>
+            <div class="control">
+              <label for="bb84-distance">Fiber distance</label>
+              <output class="control-output" for="bb84-distance" id="bb84-distance-out">20 km</output>
+              <input type="range" id="bb84-distance" min="0" max="120" step="1" value="20" data-unit=" km">
+            </div>
+            <div class="control">
+              <label for="bb84-detector">Detector efficiency</label>
+              <output class="control-output" for="bb84-detector" id="bb84-detector-out">70%</output>
+              <input type="range" id="bb84-detector" min="10" max="95" step="1" value="70" data-unit="%">
+            </div>
+            <div class="control">
+              <label for="bb84-error">Optical misalignment</label>
+              <output class="control-output" for="bb84-error" id="bb84-error-out">2.0%</output>
+              <input type="range" id="bb84-error" min="0" max="12" step=".5" value="2" data-unit="%">
+            </div>
+            <div class="control">
+              <label for="bb84-dark">Dark count probability</label>
+              <output class="control-output" for="bb84-dark" id="bb84-dark-out">0.10%</output>
+              <input type="range" id="bb84-dark" min="0" max="2" step=".05" value=".1" data-unit="%">
+            </div>
+            <div class="control">
+              <label for="bb84-eve">Eve intercept-resend</label>
+              <output class="control-output" for="bb84-eve" id="bb84-eve-out">0%</output>
+              <input type="range" id="bb84-eve" min="0" max="100" step="5" value="0" data-unit="%">
+            </div>
+            <div class="control">
+              <label for="bb84-sample">Public test sample</label>
+              <output class="control-output" for="bb84-sample" id="bb84-sample-out">20%</output>
+              <input type="range" id="bb84-sample" min="5" max="50" step="5" value="20" data-unit="%">
+            </div>
+            <label class="hint" style="margin-top:10px" for="bb84-seed">Seed for repeatable runs</label>
+            <input type="number" id="bb84-seed" value="20260514" min="1" step="1">
+          </div>
+          <div class="panel">
+            <div class="panel-title">Protocol log</div>
+            <div class="log" id="bb84-log"></div>
+          </div>
+        </div>
+
+        <div class="stack reveal">
+          <div class="metrics">
+            <div class="metric"><div class="metric-label">Detected pulses</div><div class="metric-value" id="bb84-m-detected">--</div></div>
+            <div class="metric"><div class="metric-label">Sifted key</div><div class="metric-value" id="bb84-m-sifted">--</div></div>
+            <div class="metric"><div class="metric-label">Sample QBER</div><div class="metric-value" id="bb84-m-qber">--</div></div>
+            <div class="metric"><div class="metric-label">Final secret key</div><div class="metric-value" id="bb84-m-final">--</div></div>
+          </div>
+          <div class="stages" id="bb84-stages"></div>
+          <div class="panel">
+            <div class="panel-title">Bit-level audit trail <span class="pill">first 96 pulses</span></div>
+            <div class="bit-table">
+              <table>
+                <thead><tr><th>#</th><th>A bit</th><th>A basis</th><th>Bob basis</th><th>Bob bit</th><th>Event</th></tr></thead>
+                <tbody id="bb84-table"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-title">Monte Carlo QBER histogram</div>
+            <canvas class="canvas-short" id="bb84-chart" height="220"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-entangle">
+      <div class="view-header reveal">
+        <div>
+          <p class="eyebrow">Photon-pair lab — 02</p>
+          <h2>Time-bin entanglement and BBM92</h2>
+        </div>
+        <div class="row">
+          <button class="button primary magnetic" id="ent-run" type="button">Simulate source</button>
+          <button class="button magnetic" id="ent-scan" type="button">Scan distance</button>
+        </div>
+      </div>
+
+      <div class="layout">
+        <div class="stack reveal">
+          <div class="panel">
+            <div class="panel-title">Source and measurement</div>
+            <div class="control">
+              <label for="ent-rate">Pair generation rate</label>
+              <output class="control-output" id="ent-rate-out">500 kpairs/s</output>
+              <input type="range" id="ent-rate" min="10" max="2000" step="10" value="500" data-unit=" kpairs/s">
+            </div>
+            <div class="control">
+              <label for="ent-span">End-to-end span</label>
+              <output class="control-output" id="ent-span-out">30 km</output>
+              <input type="range" id="ent-span" min="1" max="160" step="1" value="30" data-unit=" km">
+            </div>
+            <div class="control">
+              <label for="ent-vis">Intrinsic visibility</label>
+              <output class="control-output" id="ent-vis-out">94%</output>
+              <input type="range" id="ent-vis" min="50" max="99" step="1" value="94" data-unit="%">
+            </div>
+            <div class="control">
+              <label for="ent-phase">Phase noise</label>
+              <output class="control-output" id="ent-phase-out">8 deg</output>
+              <input type="range" id="ent-phase" min="0" max="60" step="1" value="8" data-unit=" deg">
+            </div>
+            <div class="control">
+              <label for="ent-dark">Dark counts</label>
+              <output class="control-output" id="ent-dark-out">300 Hz</output>
+              <input type="range" id="ent-dark" min="0" max="5000" step="50" value="300" data-unit=" Hz">
+            </div>
+            <div class="control">
+              <label for="ent-window">Coincidence window</label>
+              <output class="control-output" id="ent-window-out">100 ps</output>
+              <input type="range" id="ent-window" min="20" max="1000" step="20" value="100" data-unit=" ps">
+            </div>
+            <label class="hint" style="margin-top:10px" for="ent-band">Telecom band</label>
+            <select id="ent-band">
+              <option value="1310" selected>O-band 1310 nm — 0.35 dB/km</option>
+              <option value="1550">C-band 1550 nm — 0.20 dB/km</option>
+            </select>
+          </div>
+          <div class="panel">
+            <div class="panel-title">Measurement log</div>
+            <div class="log" id="ent-log"></div>
+          </div>
+        </div>
+        <div class="stack reveal">
+          <div class="metrics">
+            <div class="metric"><div class="metric-label">Coincidences</div><div class="metric-value" id="ent-m-coinc">--</div></div>
+            <div class="metric"><div class="metric-label">Visibility</div><div class="metric-value" id="ent-m-vis">--</div></div>
+            <div class="metric"><div class="metric-label">CHSH S</div><div class="metric-value" id="ent-m-s">--</div></div>
+            <div class="metric"><div class="metric-label">Secret key</div><div class="metric-value" id="ent-m-key">--</div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-title">Franson interferogram</div>
+            <canvas id="ent-franson" height="260"></canvas>
+          </div>
+          <div class="panel">
+            <div class="panel-title">Distance scan</div>
+            <canvas class="canvas-short" id="ent-scan-chart" height="220"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-routing">
+      <div class="view-header reveal">
+        <div>
+          <p class="eyebrow">Network lab — 03</p>
+          <h2>Entanglement routing in a multi-node network</h2>
+        </div>
+        <div class="row">
+          <button class="button primary magnetic" id="rt-run" type="button">Route entanglement</button>
+          <button class="button magnetic" id="rt-attempts" type="button">Attempt burst</button>
+        </div>
+      </div>
+
+      <div class="layout">
+        <div class="stack reveal">
+          <div class="panel">
+            <div class="panel-title">Topology and hardware</div>
+            <label class="hint" for="rt-topology">Topology Preset</label>
+            <select id="rt-topology">
+              <option value="line">Linear metro corridor</option>
+              <option value="diamond" selected>Diamond with backup route</option>
+              <option value="ring">Ring network</option>
+              <option value="mesh">Small random mesh</option>
+            </select>
+            <div class="control" style="margin-top:16px;">
+              <label for="rt-nodes">Nodes<span class="hint">Used by line, ring, and mesh. Diamond has six fixed nodes.</span></label>
+              <output class="control-output" id="rt-nodes-out">7</output>
+              <input type="range" id="rt-nodes" min="4" max="10" step="1" value="7">
+            </div>
+            <div class="control">
+              <label for="rt-length">Mean link length</label>
+              <output class="control-output" id="rt-length-out">12 km</output>
+              <input type="range" id="rt-length" min="2" max="40" step="1" value="12" data-unit=" km">
+            </div>
+            <div class="control">
+              <label for="rt-fidelity">Raw link fidelity</label>
+              <output class="control-output" id="rt-fidelity-out">88%</output>
+              <input type="range" id="rt-fidelity" min="60" max="98" step="1" value="88" data-unit="%">
+            </div>
+            <div class="control">
+              <label for="rt-memory">Memory lifetime</label>
+              <output class="control-output" id="rt-memory-out">50 ms</output>
+              <input type="range" id="rt-memory" min="5" max="500" step="5" value="50" data-unit=" ms">
+            </div>
+            <div class="control">
+              <label for="rt-bsm">BSM success</label>
+              <output class="control-output" id="rt-bsm-out">50%</output>
+              <input type="range" id="rt-bsm" min="10" max="90" step="5" value="50" data-unit="%">
+            </div>
+            <div class="control">
+              <label for="rt-purify">Purification rounds</label>
+              <output class="control-output" id="rt-purify-out">1</output>
+              <input type="range" id="rt-purify" min="0" max="3" step="1" value="1">
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-title">Routing log</div>
+            <div class="log" id="rt-log"></div>
+          </div>
+        </div>
+        <div class="stack reveal">
+          <div class="metrics">
+            <div class="metric"><div class="metric-label">Route</div><div class="metric-value" id="rt-m-route">--</div></div>
+            <div class="metric"><div class="metric-label">End fidelity</div><div class="metric-value" id="rt-m-fid">--</div></div>
+            <div class="metric"><div class="metric-label">Success prob.</div><div class="metric-value" id="rt-m-prob">--</div></div>
+            <div class="metric"><div class="metric-label">Throughput</div><div class="metric-value" id="rt-m-rate">--</div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-title">Interactive topology</div>
+            <canvas class="canvas-tall" id="rt-canvas" height="330"></canvas>
+            <p class="hint" id="rt-route-label">Click "Route entanglement" to select a path.</p>
+          </div>
+          <div class="panel">
+            <div class="panel-title">Attempt burst</div>
+            <canvas class="canvas-short" id="rt-burst-chart" height="220"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-coexist">
+      <div class="view-header reveal">
+        <div>
+          <p class="eyebrow">Telecom coexistence lab — 04</p>
+          <h2>Quantum signals beside classical WDM traffic</h2>
+        </div>
+        <div class="row">
+          <button class="button primary magnetic" id="cx-run" type="button">Update budget</button>
+          <button class="button magnetic" id="cx-scan" type="button">Scan power</button>
+        </div>
+      </div>
+
+      <div class="layout">
+        <div class="stack reveal">
+          <div class="panel">
+            <div class="panel-title">Fiber link budget</div>
+            <label class="hint" for="cx-qwl">Quantum wavelength</label>
+            <select id="cx-qwl">
+              <option value="1290">O-band 1290 nm</option>
+              <option value="1310" selected>O-band 1310 nm</option>
+              <option value="1550">C-band 1550 nm</option>
+            </select>
+            <div class="control" style="margin-top:16px;">
+              <label for="cx-length">Fiber length</label>
+              <output class="control-output" id="cx-length-out">25 km</output>
+              <input type="range" id="cx-length" min="1" max="120" step="1" value="25" data-unit=" km">
+            </div>
+            <div class="control">
+              <label for="cx-power">Classical power/ch</label>
+              <output class="control-output" id="cx-power-out">0 dBm</output>
+              <input type="range" id="cx-power" min="-20" max="12" step="1" value="0" data-unit=" dBm">
+            </div>
+            <div class="control">
+              <label for="cx-wdm">WDM channels</label>
+              <output class="control-output" id="cx-wdm-out">8</output>
+              <input type="range" id="cx-wdm" min="1" max="48" step="1" value="8">
+            </div>
+            <div class="control">
+              <label for="cx-filter">Filter bandwidth</label>
+              <output class="control-output" id="cx-filter-out">25 GHz</output>
+              <input type="range" id="cx-filter" min="5" max="200" step="5" value="25" data-unit=" GHz">
+            </div>
+            <div class="control">
+              <label for="cx-isolation">Classical isolation</label>
+              <output class="control-output" id="cx-isolation-out">105 dB</output>
+              <input type="range" id="cx-isolation" min="70" max="140" step="5" value="105" data-unit=" dB">
+            </div>
+            <div class="control">
+              <label for="cx-detector">Detector efficiency</label>
+              <output class="control-output" id="cx-detector-out">75%</output>
+              <input type="range" id="cx-detector" min="10" max="95" step="5" value="75" data-unit="%">
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-title">Engineering assessment</div>
+            <div class="note" id="cx-assessment"></div>
+          </div>
+        </div>
+        <div class="stack reveal">
+          <div class="metrics">
+            <div class="metric"><div class="metric-label">Signal counts</div><div class="metric-value" id="cx-m-signal">--</div></div>
+            <div class="metric"><div class="metric-label">Noise counts</div><div class="metric-value" id="cx-m-noise">--</div></div>
+            <div class="metric"><div class="metric-label">QBER</div><div class="metric-value" id="cx-m-qber">--</div></div>
+            <div class="metric"><div class="metric-label">Secret key rate</div><div class="metric-value" id="cx-m-key">--</div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-title">Spectrum</div>
+            <canvas id="cx-spectrum" height="270"></canvas>
+          </div>
+          <div class="panel">
+            <div class="panel-title">Power scan</div>
+            <canvas class="canvas-short" id="cx-scan-chart" height="220"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-glossary">
+      <div class="view-header reveal">
+        <div>
+          <p class="eyebrow">Quick reference — 05</p>
+          <h2>Glossary of quantum networking</h2>
+          <p class="lede">Key terms, physical meanings, and the equations that govern them.</p>
+        </div>
+      </div>
+      <div class="glossary-search reveal">
+        <label class="sr-only" for="glossary-input">Search the glossary</label>
+        <input type="search" id="glossary-input" placeholder="Search terms… e.g. QBER, Bell, fidelity, Raman" autocomplete="off">
+      </div>
+      <div class="glossary-grid reveal" id="glossary-grid">
+        <div class="gcard" data-terms="qber quantum bit error rate error rate">
+          <div class="gcard-term">QBER — Quantum Bit Error Rate</div>
+          <div class="gcard-def">The fraction of sifted key bits where Bob's measurement disagrees with Alice's intended bit. The BB84 abort threshold is approximately 11%.</div>
+          <div class="gcard-formula">QBER = errors / sifted_bits_tested</div>
+        </div>
+        <div class="gcard" data-terms="sifting basis reconciliation">
+          <div class="gcard-term">Sifting</div>
+          <div class="gcard-def">After quantum transmission, Alice and Bob publicly announce which basis (Z or X) each used. Bits where they chose different bases are discarded.</div>
+        </div>
+        <div class="gcard" data-terms="privacy amplification compression secret key">
+          <div class="gcard-term">Privacy Amplification</div>
+          <div class="gcard-def">A classical hashing step that compresses the sifted key, removing any information that Eve might have learned.</div>
+          <div class="gcard-formula">f_secret ≈ max(0, 1 − 2·h₂(QBER))</div>
+        </div>
+        <div class="gcard" data-terms="time-bin entanglement early late temporal mode">
+          <div class="gcard-term">Time-bin Entanglement</div>
+          <div class="gcard-def">Entanglement encoded in the arrival time of photons (early vs late time slots). Robust against polarization drift in fiber.</div>
+        </div>
+        <div class="gcard" data-terms="franson interferometer interferometry visibility">
+          <div class="gcard-term">Franson Interferometer</div>
+          <div class="gcard-def">An unbalanced Mach-Zehnder interferometer used to measure time-bin entanglement. The visibility V directly quantifies entanglement quality.</div>
+          <div class="gcard-formula">C(φ) = C₀[1 + V·cos(φ)] / 2</div>
+        </div>
+        <div class="gcard" data-terms="CHSH bell inequality violation S value">
+          <div class="gcard-term">CHSH Inequality &amp; Bell Test</div>
+          <div class="gcard-def">A statistical test of quantum non-locality. The CHSH parameter S = 2√2·V. A measured S > 2 proves genuine quantum entanglement.</div>
+          <div class="gcard-formula">S = 2√2 · V</div>
+        </div>
+        <div class="gcard" data-terms="entanglement swapping BSM bell state measurement teleporter repeater">
+          <div class="gcard-term">Entanglement Swapping</div>
+          <div class="gcard-def">A Bell-state measurement (BSM) at an intermediate node "teleports" entanglement to the outer nodes, extending it without measuring the qubit value.</div>
+          <div class="gcard-formula">F_swap ≈ F₁·F₂ + (1−F₁)·(1−F₂)/3</div>
+        </div>
+        <div class="gcard" data-terms="raman scattering noise classical quantum coexistence fiber WDM">
+          <div class="gcard-term">Spontaneous Raman Scattering</div>
+          <div class="gcard-def">When strong classical light travels through silica fiber, it generates photons at shifted wavelengths via inelastic scattering.</div>
+          <div class="gcard-formula">N_Raman ∝ P_classical · L_fiber · Δλ_filter</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-manual">
+      <div class="view-header reveal">
+        <div>
+          <p class="eyebrow">Operations manual — 06</p>
+          <h2>How to run the Quantum Network Lab</h2>
+          <p class="lede">A practical guide explaining the workflow, what each button does, and how to interpret the outputs.</p>
+        </div>
+        <div class="row">
+          <button class="button primary magnetic" id="manual-open-all" type="button">Open all sections</button>
+        </div>
+      </div>
+
+      <div class="learning-path reveal">
+        <div class="path-step"><strong>1. Choose a lab</strong><span>Pick a simulation from the sidebar. The active section is highlighted.</span></div>
+        <div class="path-step"><strong>2. Read the explainer</strong><span>Each lab has a collapsible concept panel at the top. Expand it for a first-principles explanation.</span></div>
+        <div class="path-step"><strong>3. Move controls &amp; run</strong><span>Changed sliders glow. Press the primary button to simulate, or use scan/burst buttons.</span></div>
+        <div class="path-step"><strong>4. Interpret &amp; export</strong><span>Metrics update with colour-coded states. Export a JSON report from the top bar.</span></div>
+      </div>
+
+      <div class="manual-grid reveal">
+        <div>
+          <details class="accordion panel" open>
+            <summary>Recommended learning path</summary>
+            <div class="details-body">
+              <p>Start with BB84 and run the protocol. Then change one parameter at a time. Run Monte Carlo to see statistical variation.</p>
+              <div class="formula">1. BB84 → learn sifting, QBER, privacy amplification
+2. Time-bin pairs → visibility, Bell violation
+3. Routing → entanglement swapping, quantum memories
+4. Fiber coexistence → Raman noise, WDM power</div>
+            </div>
+          </details>
+          <details class="accordion panel">
+            <summary>Model limits and reproducibility</summary>
+            <div class="details-body">
+              <p>This lab is rigorous as an educational simulator: formulas are explicit, assumptions are logged, controls are reproducible.</p>
+              <div class="formula">Not included in this simulator:
+- Decoy-state analysis for WCP BB84
+- Finite-key security confidence intervals
+- Detector side-channel attacks</div>
+              <p>The seed control in BB84 makes runs fully reproducible.</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-notes">
+      <div class="view-header reveal">
+        <div>
+          <p class="eyebrow">Study notes — 07</p>
+          <h2>Session Reports & References</h2>
+          <p class="lede">View your simulation history and foundational papers.</p>
+        </div>
+      </div>
+
+      <div class="reveal">
+        <details class="accordion panel" id="notes-report" open>
+          <summary>Session reports</summary>
+          <div class="details-body">
+            <p>Every main simulation button adds a concise entry to the session report.</p>
+            <div id="report-list" class="report-list"></div>
+          </div>
+        </details>
+
+        <details class="accordion panel" id="notes-refs">
+          <summary>Key references and further reading</summary>
+          <div class="details-body">
+            <div class="ref-grid">
+              <div class="ref-card">
+                <div class="ref-tag tag-protocol">Protocol</div>
+                <h4>Bennett &amp; Brassard (1984)</h4>
+                <p>BB84 — the original QKD protocol.</p>
+              </div>
+              <div class="ref-card">
+                <div class="ref-tag tag-theory">Theory</div>
+                <h4>Franson (1989)</h4>
+                <p>Proposed the time-bin entanglement scheme.</p>
+              </div>
+              <div class="ref-card">
+                <div class="ref-tag tag-experiment">Experiment</div>
+                <h4>KPN / TU Delft (2022)</h4>
+                <p>First deployed metropolitan quantum network.</p>
+              </div>
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+  </main>
+</div><div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="js/core.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/physics.js"></script>
+</body>
+</html>
